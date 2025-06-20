@@ -44,6 +44,15 @@ class Feedback(Base):
     user = relationship('User', back_populates='feedback')
     review_session = relationship('ReviewSession', back_populates='feedback')
 
+class ChatGPTInteraction(Base):
+    __tablename__ = 'chatgpt_interactions'
+    id = Column(Integer, primary_key=True)
+    prompt = Column(Text, nullable=False)
+    response = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    feedback_id = Column(Integer, ForeignKey('feedback.id'), nullable=True)
+    feedback = relationship('Feedback', backref='chatgpt_interactions')
+
 def init_db():
     engine = get_engine()
     Base.metadata.create_all(engine) 

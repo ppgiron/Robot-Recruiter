@@ -1,6 +1,8 @@
 import os
 import pytest
 from src.github_talent_intelligence.db import init_db, get_session, User, Feedback
+from src.github_talent_intelligence.gpt_stub import get_chatgpt_suggestion
+from src.github_talent_intelligence.db import ChatGPTInteraction
 
 TEST_DB_PATH = 'sqlite:///test.db'
 
@@ -31,4 +33,13 @@ def test_add_user_and_feedback():
     assert fb.repo_full_name == 'octocat/Hello-World'
     assert fb.suggested_category == 'Backend'
     assert fb.user_id == user.id
+    db.close()
+
+def test_chatgpt_stub_saves_interaction():
+    db = get_session()
+    prompt = "Suggest a category for a repo about React."
+    response = get_chatgpt_suggestion(prompt)
+    interaction = db.query(ChatGPTInteraction).filter_by(prompt=prompt).first()
+    assert interaction is not None
+    assert interaction.response == response
     db.close() 
