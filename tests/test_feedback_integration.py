@@ -1,0 +1,34 @@
+import os
+import pytest
+from src.github_talent_intelligence.db import init_db, get_session, User, Feedback
+
+TEST_DB_PATH = 'sqlite:///test.db'
+
+@pytest.fixture(scope='module', autouse=True)
+def setup_and_teardown():
+    os.environ['ROBOT_RECRUITER_DB_URL'] = TEST_DB_PATH
+    init_db()
+    yield
+    # Clean up test DB file
+    if os.path.exists('test.db'):
+        os.remove('test.db')
+
+def test_add_user_and_feedback():
+    db = get_session()
+    user = User(name='Test User', email='test@example.com', role='reviewer')
+    db.add(user)
+    db.commit()
+    feedback = Feedback(
+        repo_full_name='octocat/Hello-World',
+        suggested_category='Backend',
+        reason='API project',
+        user_id=user.id
+    )
+    db.add(feedback)
+    db.commit()
+    # Retrieve and check
+    fb = db.query(Feedback).first()
+    assert fb.repo_full_name == 'octocat/Hello-World'
+    assert fb.suggested_category == 'Backend'
+    assert fb.user_id == user.id
+    db.close() 
