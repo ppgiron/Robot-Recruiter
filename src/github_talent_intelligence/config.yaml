@@ -1,0 +1,84 @@
+# GitHub Talent Intelligence Platform Configuration
+
+github:
+  token: ${GITHUB_TOKEN}  # Will be read from environment variable
+  rate_limit_delay: 0.1   # Delay between API calls (seconds)
+  max_retries: 3          # Maximum retries for failed requests
+
+analysis:
+  use_nlp: true           # Use NLP classification
+  classify_roles: true    # Classify contributor roles
+  max_commits_per_repo: 100
+  max_contributors_per_repo: 50
+
+categories:
+  Frontend:
+    keywords: [react, vue, angular, javascript, typescript, css, html, frontend, ui, ux, web]
+    description: "Web and UI development, user interfaces, client-side apps."
+  Backend:
+    keywords: [django, flask, rails, node, express, backend, api, server, java, go, python, .net, spring, fastapi]
+    description: "Server-side development, APIs, business logic, databases."
+  DevOps:
+    keywords: [devops, ci, cd, kubernetes, docker, terraform, ansible, pipeline, automation, cloud, aws, azure, gcp, monitoring, prometheus, grafana]
+    description: "Infrastructure, automation, deployment, cloud, and operations."
+  DataScience:
+    keywords: [data, pandas, numpy, analysis, statistics, machine learning, ml, ai, jupyter, scikit, pytorch, tensorflow, analytics]
+    description: "Data analysis, machine learning, AI, and statistics."
+  Mobile:
+    keywords: [android, ios, mobile, react native, flutter, swift, kotlin, objective-c]
+    description: "Mobile app development for Android and iOS."
+  Embedded:
+    keywords: [embedded, firmware, microcontroller, arduino, stm32, baremetal, iot, rtos]
+    description: "Embedded systems, IoT, firmware, and hardware-near programming."
+  QA:
+    keywords: [qa, test, testing, pytest, selenium, cypress, junit, tdd, bdd, quality]
+    description: "Quality assurance, testing, and automation."
+  SRE:
+    keywords: [sre, reliability, monitoring, alerting, incident, oncall, resilience]
+    description: "Site reliability engineering, monitoring, and incident response."
+  Security:
+    keywords: [security, pentest, ctf, exploit, vulnerability, cryptography, auth, oauth, jwt, hardening]
+    description: "Security, cryptography, penetration testing, and vulnerabilities."
+  GameDev:
+    keywords: [game, unity, unreal, godot, gamedev, graphics, rendering, shader, game engine]
+    description: "Game development, engines, graphics, and rendering."
+  Blockchain:
+    keywords: [blockchain, smart contract, solidity, ethereum, web3, defi, crypto, bitcoin]
+    description: "Blockchain, smart contracts, cryptocurrencies, and DeFi."
+  Hardware:
+    keywords: [fpga, verilog, vhdl, rtl, silicon, asic, chip, board, hdl, hardware]
+    description: "Hardware design, FPGA, ASIC, and electronics."
+  Documentation:
+    keywords: [docs, documentation, sphinx, mkdocs, docsite, tutorial, guide, manual]
+    description: "Documentation, guides, and technical writing."
+  Research:
+    keywords: [research, paper, arxiv, publication, academic, experiment, simulation]
+    description: "Research, academic work, and scientific computing."
+
+output:
+  default_formats: ["json", "csv", "recruiting"]
+  default_directory: "results"
+
+# Recruiting-specific settings
+recruiting:
+  # Skills to look for in contributor analysis
+  target_skills:
+    - "Python"
+    - "JavaScript"
+    - "Go"
+    - "Rust"
+    - "DevOps"
+    - "Blockchain"
+    - "Security"
+  
+  # Minimum thresholds for candidate scoring
+  min_contributions: 10
+  min_followers: 50
+  min_public_repos: 5
+  
+  # Weight factors for expertise scoring
+  scoring_weights:
+    contributions: 0.4
+    followers: 0.2
+    public_repos: 0.2
+    activity_recency: 0.2 
