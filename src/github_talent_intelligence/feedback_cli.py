@@ -1,5 +1,6 @@
 import click
 from .db import init_db, get_session, User, Feedback, ReviewSession
+from .github_oauth import github_device_login
 
 @click.group()
 def cli():
@@ -58,6 +59,14 @@ def list_feedback():
         user = db.query(User).get(fb.user_id)
         click.echo(f"Repo: {fb.repo_full_name}, Category: {fb.suggested_category}, By: {user.email}, Reason: {fb.reason}, Status: {fb.status}")
     db.close()
+
+@cli.command()
+@click.option('--client-id', envvar='GITHUB_OAUTH_CLIENT_ID', prompt='GitHub OAuth App Client ID')
+def login_github(client_id):
+    """Authenticate with GitHub via device flow and save token."""
+    if client_id == 'your-client-id-here':
+        client_id = click.prompt('GitHub OAuth App Client ID')
+    github_device_login(client_id)
 
 if __name__ == '__main__':
     cli() 
