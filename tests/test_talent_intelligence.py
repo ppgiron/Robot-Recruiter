@@ -32,7 +32,7 @@ def test_classify_repo_weighted_frontend(analyzer):
         "language": "JavaScript",
         "topics": ["react", "ui", "frontend"],
     }
-    category = analyzer._classify_repo_weighted(repo)
+    category, confidence = analyzer._classify_repo_weighted(repo)
     assert category == "Frontend"
 
 
@@ -43,7 +43,7 @@ def test_classify_repo_weighted_backend(analyzer):
         "language": "Python",
         "topics": ["api", "backend", "fastapi"],
     }
-    category = analyzer._classify_repo_weighted(repo)
+    category, confidence = analyzer._classify_repo_weighted(repo)
     assert category == "Backend"
 
 
@@ -54,7 +54,7 @@ def test_classify_repo_weighted_unclassified(analyzer):
         "language": "Esperanto",
         "topics": [],
     }
-    category = analyzer._classify_repo_weighted(repo)
+    category, confidence = analyzer._classify_repo_weighted(repo)
     assert category == "Unclassified"
 
 

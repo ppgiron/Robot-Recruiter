@@ -13,7 +13,7 @@ from collections import defaultdict
 from dataclasses import asdict, dataclass
 from dataclasses import fields as dataclass_fields
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 import requests
@@ -22,6 +22,7 @@ from dotenv import load_dotenv
 from tqdm import tqdm
 
 from .config_loader import load_categories
+from .gpt_stub import get_chatgpt_suggestion
 
 # Lazy load NLP libraries
 sentence_transformers = None
@@ -79,6 +80,7 @@ class Repository:
     contributors: List[Contributor]
     analysis_score: Optional[float] = None
     api_data: Optional[dict] = None
+    analysis_confidence: Optional[float] = None
 
 
 class TalentAnalyzer:
@@ -305,6 +307,7 @@ class TalentAnalyzer:
         )
 
         analyzed_repos = []
+        CONFIDENCE_THRESHOLD = 0.9
 
         for repo_data in tqdm(repos_data, desc="Analyzing repositories"):
             try:
@@ -336,9 +339,27 @@ class TalentAnalyzer:
 
                 # Classify repository
                 if use_nlp:
-                    classification = self._classify_repo_nlp(repo_full)
+                    classification, confidence = self._classify_repo_nlp(repo_full)
                 else:
-                    classification = self._classify_repo_weighted(repo_full)
+                    classification, confidence = self._classify_repo_weighted(repo_full)
+
+                # Fallback to ChatGPT if confidence is low (temporarily disabled)
+                # if confidence < CONFIDENCE_THRESHOLD:
+                #     prompt = (
+                #         f"Classify the following GitHub repository into one of these categories: {', '.join(self.categories.keys())}.\n"
+                #         f"Repository name: {repo_full.get('name', '')}\n"
+                #         f"Description: {repo_full.get('description', '')}\n"
+                #         f"Topics: {', '.join(repo_full.get('topics', []))}\n"
+                #         f"Language: {repo_full.get('language', '')}\n"
+                #         f"Respond with only the category name."
+                #     )
+                #     chatgpt_category = get_chatgpt_suggestion(prompt)
+                #     if chatgpt_category and chatgpt_category in self.categories:
+                #         classification = chatgpt_category
+                #         confidence = CONFIDENCE_THRESHOLD  # Assign threshold as confidence for LLM
+                #     elif chatgpt_category:
+                #         classification = chatgpt_category.strip()
+                #         confidence = CONFIDENCE_THRESHOLD
 
                 # Get indicators
                 indicators = self._get_indicators(repo_full)
@@ -365,6 +386,7 @@ class TalentAnalyzer:
                     indicators=indicators,
                     contributors=contributors,
                     api_data=repo_full,
+                    analysis_confidence=confidence,
                 )
 
                 analyzed_repos.append(repo)
@@ -577,7 +599,7 @@ class TalentAnalyzer:
         return None
 
     # Classification methods
-    def _classify_repo_nlp(self, repo: Dict) -> str:
+    def _classify_repo_nlp(self, repo: Dict) -> Tuple[str, float]:
         """Classify repository using NLP/sentence embeddings."""
         global sentence_transformers, sklearn_similarity
         if sentence_transformers is None:
@@ -598,12 +620,12 @@ class TalentAnalyzer:
         category_embeddings = model.encode(category_texts)
         similarities = sklearn_similarity(repo_embedding, category_embeddings)
         best_match_index = similarities.argmax()
-        best_match_score = similarities[0, best_match_index]
+        best_match_score = float(similarities[0, best_match_index])
         if best_match_score > 0.2:
-            return category_names[best_match_index]
-        return "Unclassified"
+            return category_names[best_match_index], best_match_score
+        return "Unclassified", best_match_score
 
-    def _classify_repo_weighted(self, repo: Dict) -> str:
+    def _classify_repo_weighted(self, repo: Dict) -> Tuple[str, float]:
         """Classify repository using weighted keyword matching from config."""
         scores = {category: 0 for category in self.categories.keys()}
         text_name = repo.get("name", "").lower()
@@ -629,8 +651,11 @@ class TalentAnalyzer:
                 if "Hardware" in scores:
                     scores["Hardware"] += 3
         best = max(scores, key=scores.get)
+        best_score = scores[best]
+        total_score = sum(scores.values()) or 1  # avoid division by zero
+        confidence = best_score / total_score
         # Only assign if score is above threshold (e.g., 3)
-        return best if scores[best] > 3 else "Unclassified"
+        return (best if best_score > 3 else "Unclassified", confidence)
 
     def _get_indicators(self, repo: Dict) -> List[str]:
         """Get technical indicators from repository."""

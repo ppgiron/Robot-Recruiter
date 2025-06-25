@@ -46,6 +46,7 @@ data/*.csv
 results/
 *.log
 backup_old_project/
+node_modules/
 
 # Testing
 .coverage
@@ -54,3 +55,4 @@ htmlcov/
 
 # Documentation
 docs/_build/
+node_modules

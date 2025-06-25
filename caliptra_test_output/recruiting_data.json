@@ -1,0 +1,774 @@
+{
+  "summary": {
+    "total_repositories": 1,
+    "total_contributors": 30,
+    "categories": {
+      "Security": 1
+    },
+    "analysis_date": "2025-06-21 17:57:51"
+  },
+  "contributors": [
+    {
+      "login": "bluegate010",
+      "name": "Jeff Andersen",
+      "bio": null,
+      "location": "Kirkland, Washington",
+      "company": "Google, LLC",
+      "contributions": 61,
+      "followers": 6,
+      "public_repos": 23,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 6,
+        "docs": 3,
+        "test": 2
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "andreslagarcavilla",
+      "name": "Andres Lagar-Cavilla",
+      "bio": null,
+      "location": "Mountain View, CA, USA",
+      "company": "Google",
+      "contributions": 36,
+      "followers": 16,
+      "public_repos": 14,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 3,
+        "docs": 1,
+        "test": 1
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "steph-morton",
+      "name": null,
+      "bio": null,
+      "location": null,
+      "company": null,
+      "contributions": 20,
+      "followers": 0,
+      "public_repos": 0,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 2,
+        "docs": 1,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "varuns-nvidia",
+      "name": "Varun Sampath",
+      "bio": null,
+      "location": null,
+      "company": "NVIDIA",
+      "contributions": 20,
+      "followers": 1,
+      "public_repos": 2,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 2,
+        "docs": 1,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "zhalvorsen",
+      "name": "Zach Halvorsen",
+      "bio": null,
+      "location": null,
+      "company": "@googlers ",
+      "contributions": 15,
+      "followers": 1,
+      "public_repos": 7,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 1,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "FerralCoder",
+      "name": "Lou Ferraro",
+      "bio": null,
+      "location": null,
+      "company": "AMD",
+      "contributions": 13,
+      "followers": 0,
+      "public_repos": 3,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 1,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "steven-bellock",
+      "name": "Steven Bellock",
+      "bio": "System software security engineer interested in formal verification of RISC-V hardware and machine code.",
+      "location": "Folsom, CA",
+      "company": "NVIDIA",
+      "contributions": 11,
+      "followers": 24,
+      "public_repos": 21,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 1,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "syncsrc-nv",
+      "name": "Matt King",
+      "bio": null,
+      "location": null,
+      "company": null,
+      "contributions": 10,
+      "followers": 0,
+      "public_repos": 1,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 1,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "calebofearth",
+      "name": "Caleb",
+      "bio": "Hardware Engineer @microsoft ",
+      "location": "Greater Seattle Area",
+      "company": "@microsoft",
+      "contributions": 8,
+      "followers": 6,
+      "public_repos": 3,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "JohnTraverAmd",
+      "name": "John Traver",
+      "bio": null,
+      "location": null,
+      "company": "AMD",
+      "contributions": 5,
+      "followers": 2,
+      "public_repos": 0,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "nquarton",
+      "name": "Nick Quarton",
+      "bio": null,
+      "location": null,
+      "company": null,
+      "contributions": 5,
+      "followers": 0,
+      "public_repos": 3,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "bharatpillilli",
+      "name": null,
+      "bio": null,
+      "location": null,
+      "company": null,
+      "contributions": 5,
+      "followers": 2,
+      "public_repos": 0,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "korran",
+      "name": "Kor Nielsen",
+      "bio": null,
+      "location": "SF Bay Area",
+      "company": "Google",
+      "contributions": 5,
+      "followers": 5,
+      "public_repos": 17,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "attzonko",
+      "name": "Alex Tzonkov",
+      "bio": "Engineer who is passionate about computers and technology. ",
+      "location": "Folsom, CA",
+      "company": null,
+      "contributions": 4,
+      "followers": 13,
+      "public_repos": 26,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "clundin25",
+      "name": "Carl Lundin",
+      "bio": null,
+      "location": "Seattle, WA",
+      "company": "Google",
+      "contributions": 4,
+      "followers": 3,
+      "public_repos": 41,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "swenson",
+      "name": "Christopher Swenson",
+      "bio": null,
+      "location": "Portland, OR, USA",
+      "company": "Microsoft",
+      "contributions": 3,
+      "followers": 234,
+      "public_repos": 154,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "mcockrell-google",
+      "name": null,
+      "bio": null,
+      "location": null,
+      "company": null,
+      "contributions": 3,
+      "followers": 4,
+      "public_repos": 3,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "ericeilertson",
+      "name": "Eric Eilertson",
+      "bio": null,
+      "location": null,
+      "company": null,
+      "contributions": 3,
+      "followers": 3,
+      "public_repos": 16,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "mhatrevi",
+      "name": "Vishal Mhatre",
+      "bio": null,
+      "location": null,
+      "company": null,
+      "contributions": 3,
+      "followers": 2,
+      "public_repos": 0,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "Nitsirks",
+      "name": "Michael Norris",
+      "bio": null,
+      "location": null,
+      "company": "Microsoft",
+      "contributions": 2,
+      "followers": 2,
+      "public_repos": 0,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "nileshbpat",
+      "name": "Nilesh Patel",
+      "bio": null,
+      "location": null,
+      "company": null,
+      "contributions": 2,
+      "followers": 0,
+      "public_repos": 2,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "pkwidzin-amd",
+      "name": "Piotr Kwidzinski",
+      "bio": null,
+      "location": null,
+      "company": "AMD",
+      "contributions": 2,
+      "followers": 0,
+      "public_repos": 2,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "jhand2",
+      "name": "Jordan Hand",
+      "bio": null,
+      "location": "Washington",
+      "company": "Google",
+      "contributions": 2,
+      "followers": 16,
+      "public_repos": 60,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "rusty1968",
+      "name": "Anthony Rocha",
+      "bio": null,
+      "location": null,
+      "company": null,
+      "contributions": 1,
+      "followers": 2,
+      "public_repos": 36,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "bensternthal",
+      "name": "Benjamin Sternthal",
+      "bio": "Director, Linux Foundation / OpenJS Foundation. Formerly Mozilla, John Wiley & Sons, Conde Nast",
+      "location": "Portland, Oregon USA",
+      "company": "Linux Foundation",
+      "contributions": 1,
+      "followers": 88,
+      "public_repos": 106,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "fdamato",
+      "name": "Fabrizio Damato",
+      "bio": null,
+      "location": null,
+      "company": "AMD",
+      "contributions": 1,
+      "followers": 0,
+      "public_repos": 3,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "mgielda",
+      "name": "Michael Gielda",
+      "bio": null,
+      "location": null,
+      "company": "@antmicro",
+      "contributions": 1,
+      "followers": 189,
+      "public_repos": 125,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "mojtaba-bisheh",
+      "name": "Mojtaba Bisheh-Niasar",
+      "bio": "Hardware architecture expert with focus on cryptographic primitives.",
+      "location": null,
+      "company": "Microsoft",
+      "contributions": 1,
+      "followers": 7,
+      "public_repos": 4,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "vsonims",
+      "name": "Vishal Soni",
+      "bio": null,
+      "location": null,
+      "company": null,
+      "contributions": 1,
+      "followers": 4,
+      "public_repos": 1,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    },
+    {
+      "login": "jhprabhu",
+      "name": null,
+      "bio": null,
+      "location": null,
+      "company": null,
+      "contributions": 1,
+      "followers": 0,
+      "public_repos": 1,
+      "skills": [],
+      "expertise_score": null,
+      "roles": {
+        "code": 0,
+        "docs": 0,
+        "test": 0
+      },
+      "repositories": [
+        {
+          "name": "Caliptra",
+          "full_name": "chipsalliance/Caliptra",
+          "classification": "Security",
+          "language": null
+        }
+      ]
+    }
+  ],
+  "repositories": [
+    {
+      "name": "Caliptra",
+      "full_name": "chipsalliance/Caliptra",
+      "description": "Caliptra IP and firmware for integrated Root of Trust block",
+      "classification": "Security",
+      "language": null,
+      "topics": [],
+      "stargazers_count": 302,
+      "contributor_count": 30
+    }
+  ]
+}
