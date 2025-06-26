@@ -23,6 +23,7 @@ from tqdm import tqdm
 
 from .config_loader import load_categories
 from .gpt_stub import get_chatgpt_suggestion
+from .token_manager import SecureTokenManager
 
 # Lazy load NLP libraries
 sentence_transformers = None
@@ -99,7 +100,14 @@ class TalentAnalyzer:
             github_token: GitHub API token
             config_path: Path to configuration file
         """
-        self.github_token = github_token or self._get_github_token()
+        # Use provided token or get from secure sources
+        if github_token:
+            self.github_token = github_token
+        else:
+            # Use secure token manager with 1Password integration
+            token_manager = SecureTokenManager()
+            self.github_token = token_manager.get_github_token()
+        
         self.config = self._load_config(config_path)
         self.session = requests.Session()
         self.session.headers.update(
@@ -213,27 +221,6 @@ class TalentAnalyzer:
                 ],
             ),
         ]
-
-    def _get_github_token(self) -> str:
-        """Get GitHub token from environment or GitHub CLI."""
-        # Try environment variable first
-        token = os.getenv("GITHUB_TOKEN")
-        if token:
-            return token
-
-        # Try GitHub CLI
-        try:
-            result = subprocess.run(
-                ["gh", "auth", "token"], capture_output=True, text=True
-            )
-            if result.returncode == 0:
-                return result.stdout.strip()
-        except FileNotFoundError:
-            pass
-
-        raise ValueError(
-            "GitHub token not found. Set GITHUB_TOKEN environment variable or use GitHub CLI."
-        )
 
     def _load_config(self, config_path: Optional[str]) -> Dict[str, Any]:
         """Load configuration from file or use defaults."""

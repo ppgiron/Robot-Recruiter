@@ -56,3 +56,4 @@ htmlcov/
 # Documentation
 docs/_build/
 node_modules
+.github_token

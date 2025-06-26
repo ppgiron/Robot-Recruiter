@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from . import TalentAnalyzer
+from .token_manager import SecureTokenManager
 
 
 @click.group()
@@ -217,6 +218,27 @@ output:
 
 
 @cli.command()
+def setup_1password():
+    """Set up 1Password integration for secure GitHub token storage."""
+    try:
+        token_manager = SecureTokenManager()
+        success = token_manager.setup_1password_integration()
+        
+        if success:
+            click.echo("\n✅ 1Password integration setup complete!")
+            click.echo("Your GitHub token is now securely stored in 1Password.")
+            click.echo("The application will automatically retrieve it when needed.")
+        else:
+            click.echo("\n❌ 1Password integration setup failed.")
+            click.echo("Please check the error messages above and try again.")
+            sys.exit(1)
+            
+    except Exception as e:
+        click.echo(f"Error during 1Password setup: {e}", err=True)
+        sys.exit(1)
+
+
+@cli.command()
 def setup():
     """Interactive setup for the talent intelligence platform."""
 
@@ -231,14 +253,32 @@ def setup():
         click.echo("  export GITHUB_TOKEN=your_token_here")
         click.echo("\nOr create a .env file with:")
         click.echo("  GITHUB_TOKEN=your_token_here")
+        click.echo("\nFor enhanced security, consider using 1Password integration:")
+        click.echo("  python -m src.github_talent_intelligence.cli setup-1password")
 
         if click.confirm("Would you like to create a .env file now?"):
             token = click.prompt("Enter your GitHub token", hide_input=True)
             with open(".env", "w") as f:
                 f.write(f"GITHUB_TOKEN={token}\n")
             click.echo("GitHub token saved to .env file")
+            
+            # Offer 1Password integration
+            if click.confirm("Would you like to set up 1Password integration for enhanced security?"):
+                token_manager = SecureTokenManager()
+                if token_manager.setup_1password_integration():
+                    click.echo("✅ 1Password integration setup complete!")
+                else:
+                    click.echo("❌ 1Password setup failed, but .env file was created")
     else:
         click.echo("✓ GitHub token found")
+        
+        # Offer 1Password integration even if token exists
+        if click.confirm("Would you like to set up 1Password integration for enhanced security?"):
+            token_manager = SecureTokenManager()
+            if token_manager.setup_1password_integration():
+                click.echo("✅ 1Password integration setup complete!")
+            else:
+                click.echo("❌ 1Password setup failed, but existing token will continue to work")
 
     # Check for configuration file
     if not os.path.exists("config.yaml"):
