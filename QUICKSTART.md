@@ -1,6 +1,6 @@
-# Quick Start Guide - GitHub Talent Intelligence Platform
+# Quick Start Guide - Robot Recruiter
 
-Get up and running with the GitHub Talent Intelligence Platform in minutes!
+Get up and running with Robot Recruiter in minutes with secure API key management!
 
 ## 🚀 Quick Setup
 
@@ -14,23 +14,69 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-### 2. Set Up GitHub Token
+### 2. Set Up Secure API Keys (Recommended)
 
 ```bash
-# Option 1: Environment variable
-export GITHUB_TOKEN=your_github_token_here
-
-# Option 2: Create .env file
-echo "GITHUB_TOKEN=your_github_token_here" > .env
+# Set up 1Password integration for secure key storage
+python -m src.github_talent_intelligence.cli setup-1password
 ```
 
-### 3. Run Interactive Setup
+This will:
+- Check if 1Password CLI is available
+- Detect existing API keys from environment variables
+- Store them securely in 1Password
+- Test the integration
+
+### 3. Alternative: Environment Variables (for CI/CD)
 
 ```bash
-python talent_analyzer.py setup
+# For CI/CD or development only
+export GITHUB_TOKEN=your_github_token_here
+export OPENAI_API_KEY=your_openai_api_key_here
+```
+
+### 4. Run Interactive Setup
+
+```bash
+python -m src.github_talent_intelligence.cli setup
 ```
 
 This will guide you through the setup process and test your configuration.
+
+## 🔐 Security Best Practices
+
+### ✅ Secure Setup (Recommended)
+
+1. **Use 1Password Integration**:
+   ```bash
+   python -m src.github_talent_intelligence.cli setup-1password
+   ```
+
+2. **Remove Plain Text Files**:
+   ```bash
+   # Remove any .env files containing API keys
+   rm .env
+   rm -f .github_token
+   ```
+
+3. **Verify Security**:
+   ```bash
+   # Test that keys are retrieved from 1Password
+   python -c "
+   from src.github_talent_intelligence.token_manager import get_github_token, get_openai_api_key
+   print('✅ GitHub Token:', get_github_token()[:10] + '...')
+   print('✅ OpenAI Key:', get_openai_api_key()[:10] + '...')
+   "
+   ```
+
+### ❌ Avoid Plain Text Storage
+
+Never store API keys in plain text files:
+```bash
+# DON'T do this
+echo "GITHUB_TOKEN=your_token" > .env
+echo "OPENAI_API_KEY=your_key" >> .env
+```
 
 ## 🎯 Quick Examples
 
@@ -38,24 +84,24 @@ This will guide you through the setup process and test your configuration.
 
 ```bash
 # Analyze all repositories in an organization
-python talent_analyzer.py analyze --org ChainSafe --output results
+python -m src.github_talent_intelligence.cli analyze --org ChainSafe --output results
 
 # Use specific output formats
-python talent_analyzer.py analyze --org ethereum --formats json,csv --output results
+python -m src.github_talent_intelligence.cli analyze --org ethereum --formats json,csv --output results
 ```
 
 ### Get Contributor Insights
 
 ```bash
 # Analyze contributors to a specific repository
-python talent_analyzer.py contributors owner/repo --output insights.json
+python -m src.github_talent_intelligence.cli contributors owner/repo --output insights.json
 ```
 
 ### AI Recruiting Integration
 
 ```bash
 # Run the AI recruiting integration example
-python example_integration.py
+python examples/ai_recruiting_integration.py
 ```
 
 ## 🔧 Programmatic Usage
@@ -63,9 +109,9 @@ python example_integration.py
 ### Basic Analysis
 
 ```python
-from talent_intelligence import TalentAnalyzer
+from src.github_talent_intelligence import TalentAnalyzer
 
-# Initialize analyzer
+# Initialize analyzer (keys automatically retrieved from 1Password)
 analyzer = TalentAnalyzer()
 
 # Analyze organization
@@ -78,9 +124,9 @@ analyzer.save_results(repositories, "results", ["json", "csv"])
 ### AI Recruiting Integration
 
 ```python
-from recruiting_integration import RecruitingIntegration
+from src.github_talent_intelligence import RecruitingIntegration
 
-# Initialize integration
+# Initialize integration (keys automatically retrieved from 1Password)
 integration = RecruitingIntegration()
 
 # Discover talent
@@ -102,6 +148,16 @@ matches = integration.match_candidates_to_role(
     },
     candidates=talent_results['candidates']
 )
+```
+
+### Manual Key Retrieval
+
+```python
+from src.github_talent_intelligence.token_manager import get_github_token, get_openai_api_key
+
+# Get keys directly
+github_token = get_github_token()
+openai_key = get_openai_api_key()
 ```
 
 ## 📊 Output Formats
@@ -163,23 +219,34 @@ The platform automatically handles rate limiting with configurable delays.
 
 ### Common Issues
 
-1. **GitHub Token Error**
+1. **API Key Error**
    ```bash
-   # Check token is set
-   echo $GITHUB_TOKEN
-   
-   # Or check .env file
-   cat .env
+   # Check if keys are accessible from 1Password
+   python -c "
+   from src.github_talent_intelligence.token_manager import get_github_token, get_openai_api_key
+   get_github_token()
+   get_openai_api_key()
+   print('✅ Keys retrieved successfully')
+   "
    ```
 
-2. **Rate Limit Errors**
+2. **1Password CLI Issues**
+   ```bash
+   # Check 1Password CLI installation
+   op --version
+   
+   # Sign in if needed
+   op signin
+   ```
+
+3. **Rate Limit Errors**
    ```bash
    # Increase delay in config.yaml
    github:
      rate_limit_delay: 0.2
    ```
 
-3. **Missing Dependencies**
+4. **Missing Dependencies**
    ```bash
    # Reinstall requirements
    pip install -r requirements.txt --upgrade
@@ -188,8 +255,9 @@ The platform automatically handles rate limiting with configurable delays.
 ### Getting Help
 
 - Check the logs for detailed error messages
-- Verify your GitHub token has the necessary permissions
+- Verify your API keys have the necessary permissions
 - Ensure you're not hitting GitHub API rate limits
+- See [1Password Integration Guide](docs/1password_integration.md) for detailed setup
 
 ## 📈 Next Steps
 
@@ -197,6 +265,16 @@ The platform automatically handles rate limiting with configurable delays.
 2. **Integrate with ATS**: Export data to your recruiting platform
 3. **Build Workflows**: Create automated talent discovery pipelines
 4. **Scale Up**: Analyze multiple organizations and repositories
+5. **Team Setup**: Share 1Password items with team members
+
+## 🔒 Security Checklist
+
+- [ ] API keys stored in 1Password
+- [ ] No plain text `.env` files with secrets
+- [ ] `.gitignore` includes `.env` and `.github_token`
+- [ ] 1Password CLI authenticated
+- [ ] Keys tested and working
+- [ ] Team members have access to 1Password items (if applicable)
 
 ## 🎉 Success!
 

@@ -267,7 +267,7 @@ op item share "OpenAI API Key" --vault "Team Vault" --email teammate@company.com
 
 If you're currently using `.env` or `.github_token` files:
 
-1. **Backup your keys**:
+1. **Backup your keys** (if needed):
    ```bash
    cat .env
    cat .github_token
@@ -287,6 +287,66 @@ If you're currently using `.env` or `.github_token` files:
    ```bash
    python -m src.github_talent_intelligence.cli analyze --org ChainSafe
    ```
+
+## 🔒 Security Cleanup
+
+### Remove Plain Text Secrets
+
+After setting up 1Password integration, **immediately remove any plain text secrets**:
+
+```bash
+# Remove .env file containing API keys
+rm .env
+
+# Remove .github_token file if it exists
+rm -f .github_token
+
+# Verify keys are still accessible from 1Password
+python -c "
+from src.github_talent_intelligence.token_manager import get_github_token, get_openai_api_key
+print('✅ GitHub Token:', get_github_token()[:10] + '...')
+print('✅ OpenAI Key:', get_openai_api_key()[:10] + '...')
+"
+```
+
+### Environment Template
+
+Use the provided template for non-sensitive configuration:
+
+```bash
+# Copy the template
+cp env.template .env
+
+# Edit for your environment (no sensitive data)
+nano .env
+```
+
+Example `.env` file (no secrets):
+```bash
+# Robot Recruiter Configuration
+# Note: API keys are now securely stored in 1Password
+
+# Database configuration
+ROBOT_RECRUITER_DB_URL=sqlite:///robot_recruiter.db
+
+# Optional: Override 1Password settings (for CI/CD only)
+# GITHUB_TOKEN=your_token_here  # Only for CI/CD
+# OPENAI_API_KEY=your_key_here  # Only for CI/CD
+```
+
+### Git Security
+
+Ensure sensitive files are ignored:
+
+```bash
+# Check .gitignore includes
+cat .gitignore | grep -E "\.(env|github_token)"
+
+# Should show:
+# .env
+# .env.local
+# .github_token
+```
 
 ## 🔄 Key Management
 
