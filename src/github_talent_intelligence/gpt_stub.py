@@ -1,5 +1,6 @@
 import os
 from .db import ChatGPTInteraction, get_session
+from .token_manager import get_openai_api_key
 
 try:
     import openai
@@ -11,7 +12,11 @@ def get_chatgpt_suggestion(prompt, feedback_id=None, model="gpt-3.5-turbo", temp
     Calls OpenAI's ChatGPT API to get a classification suggestion.
     Saves prompt and response to DB.
     """
-    api_key = os.getenv("OPENAI_API_KEY")
+    try:
+        api_key = get_openai_api_key()
+    except ValueError:
+        api_key = None
+    
     if not openai or not api_key:
         canned_response = "[STUB] This is a placeholder ChatGPT suggestion. (No OpenAI API key or openai package)"
         db = get_session()
