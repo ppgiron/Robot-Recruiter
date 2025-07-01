@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
@@ -11,6 +11,7 @@ from .candidate_db import DatabaseManager, CandidateProfile
 from .recruiting import RecruitingIntegration
 from .db import Feedback, User, get_session
 from .gpt_stub import get_chatgpt_suggestion
+from .voice_notes import VoiceNotesProcessor
 
 app = FastAPI(title="Robot Recruiter API", version="1.0.0")
 
@@ -89,6 +90,17 @@ class FeedbackRequest(BaseModel):
 class ChatGPTSuggestionRequest(BaseModel):
     feedback_id: int
     temperature: float = 0.2
+
+class VoiceNoteResponse(BaseModel):
+    voice_note_id: int
+    transcription: str
+    language: str
+    processing_time: float
+    enhanced_suggestion: str
+    audio_file_path: str
+
+# Initialize voice notes processor
+voice_processor = VoiceNotesProcessor()
 
 @app.get("/health")
 async def health_check():
@@ -316,6 +328,125 @@ async def generate_chatgpt_suggestion(request: ChatGPTSuggestionRequest):
     prompt = f"Classify the following GitHub repository into one of the categories.\nRepo: {feedback.repo_full_name}\nSuggested category: {feedback.suggested_category}\nReason: {feedback.reason}"
     response = get_chatgpt_suggestion(prompt, feedback_id=request.feedback_id, temperature=request.temperature)
     return {"suggestion": response}
+
+@app.post("/voice-notes/upload", response_model=VoiceNoteResponse)
+async def upload_voice_note(
+    audio_file: UploadFile = File(...),
+    feedback_id: Optional[int] = Form(None),
+    user_email: str = Form(...),
+    temperature: float = Form(0.2)
+):
+    """Upload and process a voice note."""
+    try:
+        # Validate user
+        db = get_session()
+        user = db.query(User).filter_by(email=user_email).first()
+        if not user:
+            db.close()
+            raise HTTPException(status_code=404, detail="User not found")
+        db.close()
+        
+        # Validate file type
+        allowed_extensions = {'.wav', '.mp3', '.m4a', '.flac', '.ogg'}
+        file_extension = Path(audio_file.filename).suffix.lower()
+        if file_extension not in allowed_extensions:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Unsupported file type. Allowed: {', '.join(allowed_extensions)}"
+            )
+        
+        # Read audio data
+        audio_data = await audio_file.read()
+        if len(audio_data) == 0:
+            raise HTTPException(status_code=400, detail="Empty audio file")
+        
+        # Process voice note
+        result = voice_processor.process_voice_note(
+            audio_data=audio_data,
+            filename=audio_file.filename,
+            user_id=user.id,
+            feedback_id=feedback_id,
+            temperature=temperature
+        )
+        
+        return VoiceNoteResponse(**result)
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Voice note processing failed: {str(e)}")
+
+@app.get("/voice-notes/{voice_note_id}")
+async def get_voice_note(voice_note_id: int):
+    """Get voice note details including transcription and enhanced suggestion."""
+    db = get_session()
+    try:
+        from .db import VoiceNote, Transcription, VoiceEnhancedSuggestion
+        
+        voice_note = db.query(VoiceNote).get(voice_note_id)
+        if not voice_note:
+            raise HTTPException(status_code=404, detail="Voice note not found")
+        
+        # Get transcription
+        transcription = db.query(Transcription).filter_by(voice_note_id=voice_note_id).first()
+        
+        # Get enhanced suggestions
+        enhanced_suggestions = db.query(VoiceEnhancedSuggestion).filter_by(voice_note_id=voice_note_id).all()
+        
+        return {
+            "voice_note": {
+                "id": voice_note.id,
+                "audio_file_path": voice_note.audio_file_path,
+                "file_size_bytes": voice_note.file_size_bytes,
+                "duration_seconds": voice_note.duration_seconds,
+                "audio_format": voice_note.audio_format,
+                "created_at": voice_note.created_at.isoformat(),
+                "feedback_id": voice_note.feedback_id
+            },
+            "transcription": {
+                "text": transcription.text if transcription else None,
+                "language": transcription.language if transcription else None,
+                "confidence_score": transcription.confidence_score if transcription else None,
+                "processing_time": transcription.processing_time_seconds if transcription else None
+            },
+            "enhanced_suggestions": [
+                {
+                    "id": suggestion.id,
+                    "enhanced_suggestion": suggestion.enhanced_suggestion,
+                    "ai_analysis": suggestion.ai_analysis,
+                    "model": suggestion.model,
+                    "temperature": suggestion.temperature / 10,  # Convert back to float
+                    "created_at": suggestion.created_at.isoformat()
+                }
+                for suggestion in enhanced_suggestions
+            ]
+        }
+    finally:
+        db.close()
+
+@app.get("/voice-notes/feedback/{feedback_id}")
+async def get_voice_notes_for_feedback(feedback_id: int):
+    """Get all voice notes for a specific feedback item."""
+    db = get_session()
+    try:
+        from .db import VoiceNote, Transcription, VoiceEnhancedSuggestion
+        
+        voice_notes = db.query(VoiceNote).filter_by(feedback_id=feedback_id).all()
+        
+        results = []
+        for voice_note in voice_notes:
+            transcription = db.query(Transcription).filter_by(voice_note_id=voice_note.id).first()
+            enhanced_suggestions = db.query(VoiceEnhancedSuggestion).filter_by(voice_note_id=voice_note.id).all()
+            
+            results.append({
+                "voice_note_id": voice_note.id,
+                "audio_file_path": voice_note.audio_file_path,
+                "created_at": voice_note.created_at.isoformat(),
+                "transcription": transcription.text if transcription else None,
+                "enhanced_suggestions_count": len(enhanced_suggestions)
+            })
+        
+        return {"voice_notes": results}
+    finally:
+        db.close()
 
 if __name__ == "__main__":
     import uvicorn

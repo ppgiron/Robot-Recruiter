@@ -9,6 +9,7 @@ from sqlalchemy import (
     Text,
     create_engine,
     func,
+    Float,
 )
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
@@ -77,6 +78,61 @@ class ChatGPTInteraction(Base):
     review_comment = Column(Text, nullable=True)
     feedback = relationship("Feedback", backref="chatgpt_interactions")
     reviewer = relationship("User", foreign_keys=[reviewed_by])
+
+
+class VoiceNote(Base):
+    """Voice notes for feedback and reviews."""
+    __tablename__ = "voice_notes"
+    id = Column(Integer, primary_key=True)
+    feedback_id = Column(Integer, ForeignKey("feedback.id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    audio_file_path = Column(String(500), nullable=False)
+    file_size_bytes = Column(Integer)
+    duration_seconds = Column(Float)
+    audio_format = Column(String(20))  # wav, mp3, m4a, etc.
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    storage_type = Column(String(20), default="local")  # local, cloud
+    cloud_url = Column(String(500), nullable=True)
+    
+    # Relationships
+    feedback = relationship("Feedback", backref="voice_notes")
+    user = relationship("User", backref="voice_notes")
+    transcription = relationship("Transcription", back_populates="voice_note", uselist=False)
+    enhanced_suggestions = relationship("VoiceEnhancedSuggestion", back_populates="voice_note")
+
+
+class Transcription(Base):
+    """Transcriptions of voice notes using Whisper."""
+    __tablename__ = "transcriptions"
+    id = Column(Integer, primary_key=True)
+    voice_note_id = Column(Integer, ForeignKey("voice_notes.id"), nullable=False)
+    text = Column(Text, nullable=False)
+    confidence_score = Column(Float)
+    language = Column(String(10))
+    whisper_model = Column(String(20), default="base")  # tiny, base, small, etc.
+    processing_time_seconds = Column(Float)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    voice_note = relationship("VoiceNote", back_populates="transcription")
+
+
+class VoiceEnhancedSuggestion(Base):
+    """Enhanced suggestions based on voice note transcriptions."""
+    __tablename__ = "voice_enhanced_suggestions"
+    id = Column(Integer, primary_key=True)
+    voice_note_id = Column(Integer, ForeignKey("voice_notes.id"), nullable=False)
+    original_suggestion_id = Column(Integer, ForeignKey("chatgpt_interactions.id"), nullable=True)
+    voice_context = Column(Text, nullable=False)  # Combined transcription + feedback context
+    enhanced_suggestion = Column(Text, nullable=False)
+    ai_analysis = Column(Text)  # Additional AI insights
+    model = Column(String(100), default="gpt-3.5-turbo")
+    temperature = Column(Integer, default=2)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    voice_note = relationship("VoiceNote", back_populates="enhanced_suggestions")
+    original_suggestion = relationship("ChatGPTInteraction", foreign_keys=[original_suggestion_id])
 
 
 def init_db():
