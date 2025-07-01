@@ -2,6 +2,7 @@ import click
 
 from .db import Feedback, ReviewSession, User, get_session, init_db
 from .github_oauth import github_device_login
+from .gpt_stub import get_chatgpt_suggestion, get_suggestions_for_feedback, update_suggestion_review
 
 
 @click.group()
@@ -75,6 +76,22 @@ def login_github(client_id):
     if client_id == "your-client-id-here":
         client_id = click.prompt("GitHub OAuth App Client ID")
     github_device_login(client_id)
+
+
+@cli.command()
+@click.option('--feedback-id', prompt='Feedback ID', type=int)
+@click.option('--temperature', default=0.2, show_default=True, type=float, help='ChatGPT temperature (randomness)')
+def generate_chatgpt_suggestion(feedback_id, temperature):
+    """Generate a ChatGPT suggestion for a feedback item."""
+    db = get_session()
+    feedback = db.query(Feedback).get(feedback_id)
+    db.close()
+    if not feedback:
+        click.echo(f"Feedback with ID {feedback_id} not found.")
+        return
+    prompt = f"Classify the following GitHub repository into one of the categories.\nRepo: {feedback.repo_full_name}\nSuggested category: {feedback.suggested_category}\nReason: {feedback.reason}"
+    response = get_chatgpt_suggestion(prompt, feedback_id=feedback_id, temperature=temperature)
+    click.echo(f"ChatGPT suggestion: {response}")
 
 
 if __name__ == "__main__":

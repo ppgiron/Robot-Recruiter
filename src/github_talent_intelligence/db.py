@@ -56,7 +56,6 @@ class Feedback(Base):
     reason = Column(Text)
     user_id = Column(Integer, ForeignKey("users.id"))
     review_session_id = Column(Integer, ForeignKey("review_sessions.id"))
-    chatgpt_suggestion = Column(Text)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     status = Column(String(50), default="pending")
     user = relationship("User", back_populates="feedback")
@@ -68,9 +67,16 @@ class ChatGPTInteraction(Base):
     id = Column(Integer, primary_key=True)
     prompt = Column(Text, nullable=False)
     response = Column(Text, nullable=True)
+    model = Column(String(100), default="gpt-3.5-turbo")
+    temperature = Column(Integer, default=2)  # Store as int*10 (e.g., 2 for 0.2)
+    version = Column(Integer, default=1)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     feedback_id = Column(Integer, ForeignKey("feedback.id"), nullable=True)
+    reviewed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    review_status = Column(String(50), default="pending")  # pending, approved, rejected
+    review_comment = Column(Text, nullable=True)
     feedback = relationship("Feedback", backref="chatgpt_interactions")
+    reviewer = relationship("User", foreign_keys=[reviewed_by])
 
 
 def init_db():

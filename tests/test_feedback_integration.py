@@ -1,7 +1,7 @@
 import os
-
 import pytest
-
+from fastapi.testclient import TestClient
+from src.github_talent_intelligence.api import app
 from src.github_talent_intelligence.db import (
     ChatGPTInteraction,
     Feedback,
@@ -10,18 +10,23 @@ from src.github_talent_intelligence.db import (
     init_db,
 )
 from src.github_talent_intelligence.gpt_stub import get_chatgpt_suggestion
+import uuid
 
 TEST_DB_PATH = "sqlite:///test.db"
 
+client = TestClient(app)
 
-@pytest.fixture(scope="module", autouse=True)
-def setup_and_teardown():
-    os.environ["ROBOT_RECRUITER_DB_URL"] = TEST_DB_PATH
+
+@pytest.fixture(autouse=True)
+def setup_test_db():
+    """Setup test database and clean up after each test."""
+    # Use a unique test database
+    os.environ["ROBOT_RECRUITER_DB_URL"] = "sqlite:///test_feedback.db"
     init_db()
     yield
-    # Clean up test DB file
-    if os.path.exists("test.db"):
-        os.remove("test.db")
+    # Clean up
+    if os.path.exists("test_feedback.db"):
+        os.remove("test_feedback.db")
 
 
 def test_add_user_and_feedback():
@@ -53,3 +58,40 @@ def test_chatgpt_stub_saves_interaction():
     assert interaction is not None
     assert interaction.response == response
     db.close()
+
+
+def setup_feedback():
+    db = get_session()
+    # Use unique email to avoid constraint violations
+    unique_email = f"testuser_{uuid.uuid4().hex[:8]}@example.com"
+    user = User(name="Test User", email=unique_email, role="recruiter")
+    db.add(user)
+    db.commit()
+    feedback = Feedback(repo_full_name="test/repo", suggested_category="Backend", reason="Test reason", user_id=user.id)
+    db.add(feedback)
+    db.commit()
+    db.refresh(feedback)
+    db.close()
+    return feedback.id
+
+
+def test_generate_chatgpt_suggestion_default_temp(monkeypatch):
+    feedback_id = setup_feedback()
+    def mock_get_chatgpt_suggestion(prompt, feedback_id=None, model="gpt-3.5-turbo", temperature=0.2, version=1):
+        return f"[MOCKED] Suggestion for feedback {feedback_id} at temp {temperature}"
+    # Mock at the correct import path used in the API
+    monkeypatch.setattr("src.github_talent_intelligence.api.get_chatgpt_suggestion", mock_get_chatgpt_suggestion)
+    response = client.post("/chatgpt/suggestion", json={"feedback_id": feedback_id})
+    assert response.status_code == 200
+    assert "[MOCKED] Suggestion" in response.json()["suggestion"]
+
+
+def test_generate_chatgpt_suggestion_custom_temp(monkeypatch):
+    feedback_id = setup_feedback()
+    def mock_get_chatgpt_suggestion(prompt, feedback_id=None, model="gpt-3.5-turbo", temperature=0.2, version=1):
+        return f"[MOCKED] Suggestion for feedback {feedback_id} at temp {temperature}"
+    # Mock at the correct import path used in the API
+    monkeypatch.setattr("src.github_talent_intelligence.api.get_chatgpt_suggestion", mock_get_chatgpt_suggestion)
+    response = client.post("/chatgpt/suggestion", json={"feedback_id": feedback_id, "temperature": 0.7})
+    assert response.status_code == 200
+    assert "at temp 0.7" in response.json()["suggestion"]

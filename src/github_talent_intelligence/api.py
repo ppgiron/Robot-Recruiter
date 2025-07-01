@@ -10,6 +10,7 @@ from .talent_intelligence import TalentAnalyzer
 from .candidate_db import DatabaseManager, CandidateProfile
 from .recruiting import RecruitingIntegration
 from .db import Feedback, User, get_session
+from .gpt_stub import get_chatgpt_suggestion
 
 app = FastAPI(title="Robot Recruiter API", version="1.0.0")
 
@@ -84,6 +85,10 @@ class FeedbackRequest(BaseModel):
     repo_full_name: str
     suggested_category: str
     reason: str
+
+class ChatGPTSuggestionRequest(BaseModel):
+    feedback_id: int
+    temperature: float = 0.2
 
 @app.get("/health")
 async def health_check():
@@ -300,6 +305,17 @@ async def get_feedback():
         })
     db.close()
     return results
+
+@app.post("/chatgpt/suggestion")
+async def generate_chatgpt_suggestion(request: ChatGPTSuggestionRequest):
+    db = get_session()
+    feedback = db.query(Feedback).get(request.feedback_id)
+    db.close()
+    if not feedback:
+        raise HTTPException(status_code=404, detail=f"Feedback with ID {request.feedback_id} not found.")
+    prompt = f"Classify the following GitHub repository into one of the categories.\nRepo: {feedback.repo_full_name}\nSuggested category: {feedback.suggested_category}\nReason: {feedback.reason}"
+    response = get_chatgpt_suggestion(prompt, feedback_id=request.feedback_id, temperature=request.temperature)
+    return {"suggestion": response}
 
 if __name__ == "__main__":
     import uvicorn
