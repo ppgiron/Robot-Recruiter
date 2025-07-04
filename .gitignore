@@ -48,7 +48,16 @@ results/
 backup_old_project/
 node_modules/
 
-# Testing
+# Database files
+*.db
+*.db.bak
+*.sql
+robot_recruiter.db
+robot_recruiter.db.bak
+robot_recruiter_backup.sql
+
+# Test coverage
+coverage.xml
 .coverage
 .pytest_cache/
 htmlcov/
@@ -57,3 +66,8 @@ htmlcov/
 docs/_build/
 node_modules
 .github_token
+
+# Temporary files
+.vite/
+*.tmp
+*.temp

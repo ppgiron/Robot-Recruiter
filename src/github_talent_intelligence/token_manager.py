@@ -153,8 +153,8 @@ class SecureTokenManager:
                 logger.debug("1Password CLI not available or not authenticated")
                 return None
             
-            # Build the command to get the item
-            cmd = ["op", "item", "get", item_name, "--fields", "label=token"]
+            # Build the command to get the item with --reveal flag
+            cmd = ["op", "item", "get", item_name, "--fields", "label=token", "--reveal"]
             if self.vault:
                 cmd.extend(["--vault", self.vault])
             

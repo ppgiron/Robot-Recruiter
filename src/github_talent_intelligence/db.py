@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from sqlalchemy import (
     Column,
@@ -10,8 +11,10 @@ from sqlalchemy import (
     create_engine,
     func,
     Float,
+    Boolean,
 )
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from sqlalchemy.dialects.postgresql import UUID
 
 Base = declarative_base()
 
@@ -21,6 +24,7 @@ def get_engine():
         "ROBOT_RECRUITER_DB_URL",
         "postgresql://postgres:postgres@localhost:5432/robot_recruiter",
     )
+    print("DB URL:", db_url)
     return create_engine(db_url)
 
 
@@ -31,22 +35,58 @@ def get_session():
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(100), nullable=False)
-    email = Column(String(100), nullable=False, unique=True)
-    role = Column(String(50), nullable=False)  # e.g. recruiter, reviewer, admin
-    feedback = relationship("Feedback", back_populates="user")
-    review_sessions = relationship("ReviewSession", back_populates="user")
+    email = Column(String(200), unique=True, nullable=False)
+    role = Column(String(50), default="recruiter")  # recruiter, reviewer, admin
+    reviewer_level = Column(String(50), nullable=True)  # junior, senior, lead
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_login = Column(DateTime(timezone=True), nullable=True)
+    
+    # Relationships
+    feedback = relationship("Feedback", back_populates="user", foreign_keys="Feedback.user_id")
+    reviewed_feedback = relationship("Feedback", back_populates="reviewer", foreign_keys="Feedback.reviewed_by")
+    voice_notes = relationship("VoiceNote", back_populates="user")
+    review_assignments = relationship("ReviewAssignment", back_populates="reviewer")
+    review_sessions = relationship("ReviewSession", back_populates="reviewer")
 
 
 class ReviewSession(Base):
+    """Review sessions for batch processing feedback items."""
     __tablename__ = "review_sessions"
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    timestamp = Column(DateTime(timezone=True), server_default=func.now())
-    status = Column(String(50), default="open")
-    user = relationship("User", back_populates="review_sessions")
+    name = Column(String(200), nullable=False)
+    description = Column(Text, nullable=True)
+    reviewer_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    status = Column(String(50), default="active")  # active, completed, archived
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+    target_completion_date = Column(DateTime(timezone=True), nullable=True)
+    
+    # Relationships
+    reviewer = relationship("User", back_populates="review_sessions")
     feedback = relationship("Feedback", back_populates="review_session")
+    review_assignments = relationship("ReviewAssignment", back_populates="review_session")
+
+
+class ReviewAssignment(Base):
+    """Assignments of feedback items to reviewers."""
+    __tablename__ = "review_assignments"
+    id = Column(Integer, primary_key=True)
+    feedback_id = Column(Integer, ForeignKey("feedback.id"), nullable=False)
+    reviewer_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    review_session_id = Column(Integer, ForeignKey("review_sessions.id"), nullable=True)
+    assigned_at = Column(DateTime(timezone=True), server_default=func.now())
+    due_date = Column(DateTime(timezone=True), nullable=True)
+    priority = Column(String(20), default="normal")  # low, normal, high, urgent
+    status = Column(String(50), default="assigned")  # assigned, in_review, completed, overdue
+    notes = Column(Text, nullable=True)
+    
+    # Relationships
+    feedback = relationship("Feedback", back_populates="review_assignments")
+    reviewer = relationship("User", back_populates="review_assignments")
+    review_session = relationship("ReviewSession", back_populates="review_assignments")
 
 
 class Feedback(Base):
@@ -55,12 +95,21 @@ class Feedback(Base):
     repo_full_name = Column(String(200), nullable=False)
     suggested_category = Column(String(100), nullable=False)
     reason = Column(Text)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     review_session_id = Column(Integer, ForeignKey("review_sessions.id"))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    status = Column(String(50), default="pending")
-    user = relationship("User", back_populates="feedback")
+    status = Column(String(50), default="pending")  # pending, in_review, approved, rejected, needs_revision
+    review_notes = Column(Text, nullable=True)
+    reviewed_at = Column(DateTime(timezone=True), nullable=True)
+    reviewed_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    
+    # Relationships
+    user = relationship("User", back_populates="feedback", foreign_keys=[user_id])
+    reviewer = relationship("User", back_populates="reviewed_feedback", foreign_keys=[reviewed_by])
     review_session = relationship("ReviewSession", back_populates="feedback")
+    voice_notes = relationship("VoiceNote", back_populates="feedback")
+    review_assignments = relationship("ReviewAssignment", back_populates="feedback")
+    chatgpt_interactions = relationship("ChatGPTInteraction", back_populates="feedback")
 
 
 class ChatGPTInteraction(Base):
@@ -73,10 +122,12 @@ class ChatGPTInteraction(Base):
     version = Column(Integer, default=1)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     feedback_id = Column(Integer, ForeignKey("feedback.id"), nullable=True)
-    reviewed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    reviewed_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     review_status = Column(String(50), default="pending")  # pending, approved, rejected
     review_comment = Column(Text, nullable=True)
-    feedback = relationship("Feedback", backref="chatgpt_interactions")
+    
+    # Relationships
+    feedback = relationship("Feedback", back_populates="chatgpt_interactions", foreign_keys=[feedback_id])
     reviewer = relationship("User", foreign_keys=[reviewed_by])
 
 
@@ -85,7 +136,7 @@ class VoiceNote(Base):
     __tablename__ = "voice_notes"
     id = Column(Integer, primary_key=True)
     feedback_id = Column(Integer, ForeignKey("feedback.id"), nullable=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     audio_file_path = Column(String(500), nullable=False)
     file_size_bytes = Column(Integer)
     duration_seconds = Column(Float)
@@ -95,8 +146,8 @@ class VoiceNote(Base):
     cloud_url = Column(String(500), nullable=True)
     
     # Relationships
-    feedback = relationship("Feedback", backref="voice_notes")
-    user = relationship("User", backref="voice_notes")
+    feedback = relationship("Feedback", back_populates="voice_notes")
+    user = relationship("User", back_populates="voice_notes")
     transcription = relationship("Transcription", back_populates="voice_note", uselist=False)
     enhanced_suggestions = relationship("VoiceEnhancedSuggestion", back_populates="voice_note")
 

@@ -1,3 +1,52 @@
+# Robot Recruiter
+
+**Robot Recruiter** is an AI-powered, open-source platform designed to automate and streamline the technical recruiting process. It leverages GitHub data, AI models, and workflow automation to help organizations identify, assess, and manage software engineering talent more efficiently.
+
+---
+
+## 🚀 Project Overview
+
+### What is Robot Recruiter?
+Robot Recruiter is a modern recruiting assistant that automates the tedious parts of technical hiring, empowers human reviewers, and provides actionable insights—making the process faster, fairer, and more data-driven.
+
+### Current Functionality (MVP)
+- **Candidate Discovery:**
+  - Scrapes and analyzes GitHub repositories and contributors to build a database of potential candidates.
+  - Stores candidate profiles, including contributions, skills, and activity.
+- **Feedback & Review Workflow:**
+  - Allows recruiters and reviewers to assign, review, and provide feedback on candidate profiles.
+  - Supports assignment of feedback to reviewers, tracking of review status, and review session management.
+  - Reviewers can submit decisions (approved, rejected, needs revision) and notes.
+- **Database & API:**
+  - Uses SQLAlchemy ORM with support for both SQLite (for development/testing) and PostgreSQL (for production/integration).
+  - Provides a REST API for candidate, feedback, and review session management.
+- **Voice Notes (Experimental):**
+  - Allows uploading and transcribing voice notes as part of the review process (early-stage feature).
+- **Test Infrastructure:**
+  - Robust unit and integration tests for core database and workflow logic.
+  - Hybrid test setup for both SQLite and PostgreSQL.
+- **CLI & Minimal UI:**
+  - Command-line tools for managing candidates, feedback, and reviews.
+  - A modern React-based web UI for interacting with the system.
+
+### Future Functionality & Vision
+- **AI-Powered Candidate Ranking:**
+  - Use LLMs (e.g., GPT) to automatically assess and rank candidates based on code, contributions, and feedback.
+- **Automated Interview Scheduling & Communication:**
+  - Integrate with calendar/email systems to automate interview scheduling and candidate communication.
+- **Advanced Analytics & Insights:**
+  - Provide dashboards and analytics on recruiting pipeline, reviewer performance, and candidate quality.
+- **Customizable Workflows:**
+  - Support for custom review workflows, multi-stage interviews, and role-specific assessments.
+- **Integration with External Platforms:**
+  - Connect with LinkedIn, job boards, and HR systems for a unified recruiting pipeline.
+- **Enhanced Voice/Video Feedback:**
+  - Improved support for voice and video notes, including AI-powered transcription and sentiment analysis.
+- **Security & Compliance:**
+  - Role-based access control, audit logs, and compliance features for enterprise use.
+
+---
+
 # Robot Recruiter UI
 
 A modern React-based user interface for the Robot Recruiter platform - an AI-powered system for analyzing, classifying, and recruiting engineering talent from GitHub repositories.

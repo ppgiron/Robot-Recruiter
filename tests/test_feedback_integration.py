@@ -62,7 +62,6 @@ def test_chatgpt_stub_saves_interaction():
 
 def setup_feedback():
     db = get_session()
-    # Use unique email to avoid constraint violations
     unique_email = f"testuser_{uuid.uuid4().hex[:8]}@example.com"
     user = User(name="Test User", email=unique_email, role="recruiter")
     db.add(user)

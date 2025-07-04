@@ -1,7 +1,7 @@
 """Update ChatGPTInteraction and Feedback schema for suggestion integration
 
 Revision ID: 88508e0133e5
-Revises: 
+Revises: create_core_tables
 Create Date: 2025-07-01 17:10:30.398339
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '88508e0133e5'
-down_revision: Union[str, Sequence[str], None] = None
+down_revision: Union[str, Sequence[str], None] = 'create_core_tables'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

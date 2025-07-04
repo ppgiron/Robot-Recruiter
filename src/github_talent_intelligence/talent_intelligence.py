@@ -848,3 +848,29 @@ class TalentAnalyzer:
             if repo_data:
                 repos_data.append(repo_data)
         return self.analyze_repositories(repos_data, **kwargs)
+
+    def analyze_repository(self, repo_url: str, analysis_type: str = "full") -> List[Repository]:
+        """
+        Analyze a single repository from its GitHub URL.
+        
+        Args:
+            repo_url: GitHub repository URL (e.g., "https://github.com/owner/repo")
+            analysis_type: Type of analysis to perform ("full", "contributors", "skills")
+            
+        Returns:
+            List containing the analyzed Repository object
+        """
+        # Extract repo full name from URL
+        if not repo_url.startswith("https://github.com/"):
+            raise ValueError("Invalid GitHub URL. Must start with https://github.com/")
+        
+        # Remove trailing slash and extract owner/repo
+        repo_url = repo_url.rstrip('/')
+        parts = repo_url.split('/')
+        if len(parts) < 5:
+            raise ValueError("Invalid GitHub URL format. Expected: https://github.com/owner/repo")
+        
+        repo_full_name = f"{parts[-2]}/{parts[-1]}"
+        
+        # Use existing method to analyze the repository
+        return self.analyze_specific_repos([repo_full_name], analysis_type=analysis_type)
