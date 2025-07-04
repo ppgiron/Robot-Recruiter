@@ -5,6 +5,7 @@ from typing import List, Optional, Dict, Any
 import json
 import os
 import uuid
+import logging
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -19,6 +20,9 @@ from .embedding_service import embedding_service
 from .realtime_intake import realtime_service
 from sqlalchemy import text
 from .continuous_learning import continuous_learning, FeedbackData, FeedbackType, FeedbackSource
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Robot Recruiter API", version="1.0.0")
 

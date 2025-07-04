@@ -8,6 +8,7 @@ from dataclasses import asdict
 from typing import Any, Dict, List, Optional
 import os
 import requests
+import pandas as pd
 
 from .talent_intelligence import Contributor, Repository, TalentAnalyzer
 
