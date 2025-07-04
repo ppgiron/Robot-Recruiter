@@ -311,7 +311,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🔗 Related Projects
 
 - [Robot Recruiter Backend](https://github.com/your-org/robot-recruiter) - Python backend API
-- [Robot Recruiter CLI](https://github.com/your-org/robot-recruiter-cli) - Command-line interface
+- [Robot Recruiter UI](https://github.com/ppgiron/robot-recruiter-ui) - React Web Interface
 
 ---
 
